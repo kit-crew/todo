@@ -1,0 +1,557 @@
+:root {
+    color-scheme: light dark;
+    font-family: Arial, Helvetica, sans-serif;
+
+    --page: #f3f3f3;
+    --surface: #ffffff;
+    --task: #efefef;
+    --text: #171717;
+    --muted: #6f6f6f;
+    --border: #d7d7d7;
+    --button: #353535;
+    --button-text: #ffffff;
+    --link: #006fb9;
+    --shadow: 0 2px 10px rgb(0 0 0 / 8%);
+
+    --radius: 12px;
+    --task-radius: 7px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+    background: var(--page);
+}
+
+body {
+    min-width: 0;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--page);
+    color: var(--text);
+}
+
+button,
+textarea,
+input {
+    font: inherit;
+}
+
+button {
+    touch-action: manipulation;
+}
+
+a {
+    color: var(--link);
+}
+
+todo-app,
+section-list,
+undo-toast {
+    display: block;
+}
+
+.todo-app {
+    width: min(100%, 2200px);
+    min-height: 100vh;
+    margin: 0 auto;
+}
+
+.app-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 1.25rem 0.9rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+}
+
+.app-heading h1 {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 2.75rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+}
+
+.app-heading p {
+    margin: 0.4rem 0 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+    justify-content: end;
+}
+
+.button {
+    min-height: 42px;
+    border: 0;
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.button-primary {
+    color: var(--button-text);
+    background: var(--button);
+}
+
+.button-secondary {
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--border);
+}
+
+.button:hover {
+    filter: brightness(0.96);
+}
+
+.button:focus-visible,
+.icon-button:focus-visible,
+.todo-check:focus-visible,
+.task-entry textarea:focus-visible,
+.section-title:focus-visible,
+.task-text:focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--link) 40%, transparent);
+    outline-offset: 2px;
+}
+
+.section-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+    gap: 0.9rem;
+    align-items: start;
+    padding: 1rem;
+}
+
+.todo-section {
+    min-width: 0;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.section-header {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 52px;
+    padding: 0.5rem 0.45rem 0.5rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 1.22rem;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: text;
+}
+
+.section-title[contenteditable="true"],
+.task-text[contenteditable="true"] {
+    background: color-mix(in srgb, var(--link) 7%, var(--surface));
+    border-radius: 4px;
+}
+
+.icon-button {
+    display: inline-grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.icon-button:hover {
+    background: color-mix(in srgb, var(--text) 7%, transparent);
+    color: var(--text);
+}
+
+.section-drag-handle,
+.task-drag-handle {
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+}
+
+.section-drag-handle:active,
+.task-drag-handle:active {
+    cursor: grabbing;
+}
+
+.todo-list {
+    min-height: 3.7rem;
+    margin: 0;
+    padding: 0.55rem;
+    list-style: none;
+}
+
+.todo-list:empty::before {
+    content: "Nothing here.";
+    display: block;
+    padding: 0.7rem 0.55rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.todo-item {
+    --priority-color: var(--border);
+
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 0.48rem;
+    margin: 0 0 0.38rem;
+    padding: 0.62rem 0.52rem;
+    background: var(--task);
+    border: 1px solid var(--priority-color);
+    border-radius: var(--task-radius);
+    transition:
+        opacity 140ms ease,
+        transform 140ms ease,
+        box-shadow 140ms ease;
+}
+
+.todo-item:last-child {
+    margin-bottom: 0;
+}
+
+.todo-item.priority-a {
+    --priority-color: var(--priority-a);
+}
+
+.todo-item.priority-b {
+    --priority-color: var(--priority-b);
+}
+
+.todo-item.priority-c {
+    --priority-color: var(--priority-c);
+}
+
+.todo-item.priority-d {
+    --priority-color: var(--priority-d);
+}
+
+.todo-item.is-emphasized {
+    border-width: 2px;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--priority-color) 24%, transparent);
+}
+
+.todo-item.is-completing {
+    opacity: 0;
+    transform: scale(0.97);
+}
+
+.todo-check {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin: 0.12rem 0 0;
+    cursor: pointer;
+    accent-color: var(--button);
+}
+
+.task-text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: 1.05rem;
+    line-height: 1.3;
+    cursor: text;
+    white-space: pre-wrap;
+}
+
+.task-priority-token {
+    color: var(--priority-color);
+    font-weight: 800;
+}
+
+.task-emphasis-token {
+    color: var(--text);
+    font-weight: 900;
+}
+
+.task-drag-handle {
+    align-self: center;
+    color: var(--muted);
+}
+
+.task-entry {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.4rem;
+    padding: 0.52rem;
+    border-top: 1px solid var(--border);
+}
+
+.task-entry textarea {
+    width: 100%;
+    min-height: 42px;
+    max-height: 10rem;
+    resize: none;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.58rem 0.65rem;
+    background: var(--surface);
+    color: var(--text);
+    line-height: 1.25;
+}
+
+.task-entry textarea::placeholder {
+    color: var(--muted);
+}
+
+.add-task-button {
+    width: 42px;
+    min-height: 42px;
+    align-self: end;
+    border: 0;
+    border-radius: 7px;
+    background: var(--button);
+    color: var(--button-text);
+    cursor: pointer;
+    font-size: 1.35rem;
+    font-weight: 700;
+}
+
+.sortable-ghost {
+    opacity: 0.28;
+}
+
+.sortable-chosen {
+    box-shadow: 0 8px 24px rgb(0 0 0 / 15%);
+}
+
+.sortable-drag {
+    transform: rotate(0.5deg);
+}
+
+.undo-toast {
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    bottom: max(1.1rem, env(safe-area-inset-bottom));
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    transform: translateX(-50%);
+    padding: 0.72rem 0.9rem;
+    border-radius: 9px;
+    background: #202020;
+    color: #ffffff;
+    box-shadow: 0 8px 30px rgb(0 0 0 / 24%);
+}
+
+.undo-toast[hidden] {
+    display: none;
+}
+
+.undo-toast button {
+    border: 0;
+    background: transparent;
+    color: #8ecbff;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.app-footer {
+    padding: 0.75rem 1.25rem 1.4rem;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.45;
+}
+
+.app-footer p {
+    margin: 0.3rem 0;
+}
+
+.app-footer strong {
+    color: var(--text);
+}
+
+.app-footer code {
+    color: var(--text);
+    font-size: 0.95em;
+}
+
+.footer-links {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 620px) {
+    .app-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .header-actions {
+        justify-content: stretch;
+    }
+
+    .header-actions .button {
+        flex: 1 1 auto;
+    }
+
+    .section-list {
+        grid-template-columns: 1fr;
+        padding: 0.75rem;
+    }
+
+    .todo-item {
+        padding-block: 0.72rem;
+    }
+
+    .task-text {
+        font-size: 1.08rem;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --page: #171717;
+        --surface: #222222;
+        --task: #303030;
+        --text: #f2f2f2;
+        --muted: #b5b5b5;
+        --border: #454545;
+        --button: #e5e5e5;
+        --button-text: #161616;
+        --link: #8ecbff;
+        --shadow: 0 2px 12px rgb(0 0 0 / 24%);
+
+        --priority-a: #ff6b64;
+        --priority-b: #f5c451;
+        --priority-c: #73c779;
+        --priority-d: #90a4ae;
+    }
+
+    .undo-toast {
+        background: #f1f1f1;
+        color: #171717;
+    }
+
+    .undo-toast button {
+        color: #0069a8;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
+
+/* Focus helpers */
+.timer-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.timer-display {
+    min-width: 3.5rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+}
+
+.timer-button {
+    min-width: 64px;
+}
+
+.timer-add-minute {
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    font-size: 1.05rem;
+}
+
+.button:disabled {
+    cursor: default;
+    opacity: 0.45;
+    filter: none;
+}
+
+.section-priority-sort {
+    font-size: 0.78rem;
+    letter-spacing: -0.03em;
+}
+
+.section-title-group {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    min-width: 0;
+}
+
+.section-minutes {
+    flex: 0 0 auto;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.todo-item.is-selected {
+    background: #ffffff;
+    color: #171717;
+    outline: 2px solid #ff2fa4;
+    outline-offset: 2px;
+    box-shadow:
+        0 0 0 2px rgb(255 47 164 / 18%),
+        0 0 14px 4px rgb(255 47 164 / 38%);
+}
+
+.todo-item.is-selected .task-emphasis-token {
+    color: #171717;
+}
+
+.todo-item.is-selected .task-drag-handle {
+    color: #6f6f6f;
+}
+
+@media (max-width: 620px) {
+    .header-actions {
+        align-items: center;
+    }
+
+    .header-actions .button {
+        flex: 0 1 auto;
+    }
+
+    .timer-controls {
+        margin-left: auto;
+    }
+}
+
+.timer-add-minute[hidden] {
+    display: none;
+}
+
+.todo-item.is-selected .task-text[contenteditable="true"] {
+    background: #f3f3f3;
+    color: #171717;
+}
